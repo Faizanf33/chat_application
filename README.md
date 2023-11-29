@@ -29,7 +29,7 @@ After that the application can be started either in development or production mo
 ### Extract the zip file
 
 ```bash
-unzip chat_app.zip
+unzip chat_application.zip
 ```
 
 ### Go to the project folder
