@@ -43,6 +43,8 @@ class User(UserMixin, db.Model):
     fullname = db.Column(db.String(128), nullable=True)
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(128))
+    created_at = db.Column(db.DateTime(), default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime(), onupdate=datetime.utcnow)
 
     def __init__(self, username: str, email: str, password: str):
         self.username = username
@@ -92,7 +94,7 @@ class Conversation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey("users.id"))
     bot_id = db.Column(db.Integer(), db.ForeignKey("bots.id"))
-    timestamp = db.Column(db.DateTime(), default=datetime.now)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
 
     messages = db.relationship("Message", backref="conversations", lazy=True)
 
@@ -129,7 +131,7 @@ class Message(db.Model):
     receiver_id = db.Column(db.Integer())
     message = db.Column(db.Text())
     feedback = db.Column(db.Integer(), nullable=False, default=0)
-    timestamp = db.Column(db.DateTime(), default=datetime.now)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
 
     def __init__(
         self,
@@ -154,7 +156,7 @@ class Message(db.Model):
             "sender_type": self.sender_type.name,
             "message": self.message,
             "feedback": self.feedback,
-            "timestamp": self.timestamp.strftime("%d/%m/%Y %I:%M %p"),
+            "timestamp": self.timestamp.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "date": self.timestamp.strftime("%d/%m/%Y"),
             "time": self.timestamp.strftime("%I:%M %p"),
         }

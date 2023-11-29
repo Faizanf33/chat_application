@@ -4,6 +4,25 @@ try {
   console.error(e);
 }
 
+// on load change timestamp to local time
+$(document).ready(function () {
+  $(".time").each(function () {
+    var timestamp = $(this).html().trim();
+
+    if (timestamp == "") {
+      return false;
+    }
+
+    var time = new Date(timestamp);
+    time = time.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    });
+    $(this).html(time);
+  });
+});
+
 // on fullname input change
 $("#fullname").change(function () {
   var fullname = $("#fullname").val();
@@ -72,15 +91,15 @@ function newMessage() {
 
   $(
     '<li class="sent"><p>' +
-      message.replace(/(?:\r\n|\r|\n)/g, "<br>") +
-      "</p></li>" +
-      `
+    message.replace(/(?:\r\n|\r|\n)/g, "<br>") +
+    "</p></li>" +
+    `
       <p class="send-time">
       ${new Date().toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      })}
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    })}
       </p>
       `
   ).appendTo($(".messages ul"));
@@ -94,11 +113,7 @@ function newMessage() {
   let message_data = {
     message: message,
     sender_type: "USER",
-    time: new Date().toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    }),
+    timestamp: new Date().toISOString(),
   };
 
   setContactInfo(message_data);
@@ -193,6 +208,14 @@ function toggleStar(star, message_id) {
 
 function setMessage(message, user_id) {
   // Adjust message
+  let timestamp = message.timestamp;
+  let time = new Date(timestamp);
+  time = time.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+
   if (message.sender_type == "BOT" || message.sender_id != user_id) {
     let feedback = "";
     for (let i = 1; i <= 5; i++) {
@@ -208,15 +231,15 @@ function setMessage(message, user_id) {
     $(
       `<li class="replies">
           <p title="Copy to clipboard" onclick="copyToClipboard('${message.message.replace(
-            /(?:\r\n|\r|\n)/g,
-            "<br>"
-          )}')">
+        /(?:\r\n|\r|\n)/g,
+        "<br>"
+      )}')">
           ${message.message.replace(/(?:\r\n|\r|\n)/g, "<br>")}
           <br><span title="Rate the response">${feedback}</span
           </p>
         </li>
         <p class="reply-time">
-        ${message.time}
+        ${time}
         </p>
       `
     ).appendTo($(".messages ul"));
@@ -226,7 +249,7 @@ function setMessage(message, user_id) {
           ${message.message.replace(/(?:\r\n|\r|\n)/g, "<br>")}
           </p></li>
           <p class="send-time">
-          ${message.time}
+          ${time}
           </p>
           `
     ).appendTo($(".messages ul"));
@@ -306,6 +329,14 @@ function scrollToBottom() {
 }
 
 function setContactInfo(message) {
+  let timestamp = message.timestamp;
+  let time = new Date(timestamp);
+  time = time.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+
   if (message.sender_type == "BOT") {
     $(".contact.active .preview").html(message.message);
   } else {
@@ -313,7 +344,7 @@ function setContactInfo(message) {
   }
 
   $(".contact.active .preview").attr("title", message.message);
-  $(".contact.active .time").html(message.time);
+  $(".contact.active .time").html(time);
 }
 
 // bring contact to top of list
