@@ -60,6 +60,21 @@ def unauthorized_handler():
     return redirect(url_for("login"))
 
 
+# Health check
+@app.route("/health")
+def health():
+    return jsonify({
+        "status": True,
+        "message": "Server is running.",
+    })
+
+@app.route("/ping")
+def ping():
+    return jsonify({
+        "status": True,
+        "message": "Pong",
+    })
+
 @app.route("/dashboard")
 @login_required
 def dashboard():
