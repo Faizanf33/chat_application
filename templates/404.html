@@ -1,0 +1,54 @@
+<html lang="en">
+<!DOCTYPE html>
+
+<head>
+    <title>URL Not Found · Chat Bot</title>
+    <!-- Icon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
+
+</head>
+<!-- Page for url not found -->
+
+<body>
+    <div class="main">
+        <div class="error-message">Please check the URL you have entered</div>
+        <br><br>
+        <div class="message">{{ error }}</div>
+
+        <!-- Add link at the bottom to go back to dashboard -->
+        <br><br>
+        <div class="link"><a href="{{ url_for('dashboard') }}">Go back to dashboard</a></div>
+
+        <style>
+            .error-message {
+                color: white;
+                background-color: #9c2c2c;
+                padding: 8px;
+                font-size: 16px;
+                font-weight: bold;
+                text-align: center;
+            }
+
+            .message {
+                color: white;
+                padding: 10px 20px;
+                font-size: 16px;
+                font-weight: bold;
+                text-align: center;
+            }
+
+            .link {
+                color: white;
+                padding: 10px 20px;
+                font-size: 16px;
+                font-weight: bold;
+                text-align: center;
+            }
+        </style>
+    </div>
+
+    <body>
+    </body>
+
+</html>

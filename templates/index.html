@@ -1,0 +1,202 @@
+<html lang="en">
+<!DOCTYPE html>
+
+<head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+  <title>Dashboard · Chat Bot</title>
+  <meta charset="UTF-8" />
+  <meta name="robots" content="noindex" />
+
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon" />
+
+  <link rel="canonical" href="https://codepen.io/emilcarlsson/pen/ZOQZaV?limit=all&page=74&q=contact+" />
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,300" rel="stylesheet"
+    type="text/css" />
+
+  <link rel="stylesheet prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
+  <link rel="stylesheet prefetch"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
+</head>
+
+<body>
+  <div id="frame">
+    <div id="sidepanel">
+      <div id="profile">
+        <div class="wrap">
+          <a class="logout-button" href="{{ url_for('logout') }}" title="Logout">
+            <i class="fa fa-sign-out" aria-hidden="true"></i>
+          </a>
+          <p id="user-fullname">{{ user.fullname }}</p>
+          <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
+          <div id="expanded">
+            <label for="email"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i></label>
+            <input name="email" type="email" value="{{ user.email }}" disabled />
+            <label for="username"><i class="fa fa-hashtag fa-fw" aria-hidden="true"></i></label>
+            <input name="username" type="text" value="{{ user.username }}" disabled />
+            <label for="fullname"><i class="fa fa-user fa-fw" aria-hidden="true"></i></label>
+            <input id="fullname" name="fullname" type="text" placeholder="{{ user.fullname }}" />
+          </div>
+        </div>
+      </div>
+      <div id="search">
+        <label for="botname"><i class="fa fa-search" aria-hidden="true"></i></label>
+        <input name="botname" id="botname" type="text" placeholder="Search ..." />
+      </div>
+
+      <div id="contacts">
+        <ul>
+          {% for conversation in conversations %}
+          <li class="contact" onclick="viewConversation('{{ conversation.id }}')" id="{{ conversation.id }}">
+            <div class="wrap">
+              <img src="" alt="{{ conversation.bot.name[0].upper() }}" />
+              <div class="meta">
+                <p class="name">{{ conversation.bot.name }}
+                  <strong class="time">
+                    {% if conversation.last_message %}
+                    {{ conversation.last_message.time }}
+                    {% endif %}
+                  </strong>
+                </p>
+
+                {% if conversation.last_message %}
+                <p class="preview" title="{{ conversation.last_message.message }}">
+                  {{ conversation.last_message.message }}
+                </p>
+                {% else %}
+                <p class="preview">
+                  No messages yet
+                </p>
+                {% endif %}
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        <script>
+        </script>
+      </div>
+      <div id="bottom-bar">
+        <button id="addcontact" data-toggle="modal" data-target="#addBotModal">
+          <i class="fa fa-android fa-fw" aria-hidden="true"></i>
+          <span>Add Bot</span>
+        </button>
+        <button id="settings" data-toggle="modal" data-target="#settingsModal">
+          <i class="fa fa-cog fa-fw" aria-hidden="true"></i>
+          <span>Settings</span>
+        </button>
+      </div>
+    </div>
+    <div id="chat-content" class="content" style="display: none;">
+      <div class="contact-profile">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" loading="lazy" />
+        <h3 id="chat-user">Bot</h3>
+        <!-- Add Description -->
+        <p class="chat-description"><sub id="chat-description">Bot Description</sub></p>
+        <div class="social-media">
+          <i id="menu" class="fa fa-ellipsis-v" aria-hidden="true"></i>
+        </div>
+        <!-- add gpt model name -->
+        <div class="bot-model">
+          <p>{{model.upper()}}</p>
+        </div>
+        <!-- add dropdown menu -->
+        <div id="menu-dropdown" class="menu-dropdown">
+          <ul>
+            <li onclick="saveConversation()">
+              <i class="fa fa-download" aria-hidden="true"></i>
+              &nbsp; <span>Save Chat</span>
+            </li>
+            <li onclick="clearConversation()">
+              <i class="fa fa-trash" aria-hidden="true"></i>
+              &nbsp; <span>Clear Chat</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="messages">
+        <ul>
+        </ul>
+      </div>
+      <div class="message-textarea">
+        <div class="wrap">
+          <textarea type="text" placeholder="Write your message..." multiline></textarea>
+          <button class="submit" style="border-radius: 10px">
+            <i class="fa fa-paper-plane" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="default-content" class="content" style="background: linear-gradient(to left, #2c3e50, #54677a);">
+      <div class=" default-logo">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" />
+      </div>
+      <div class="default-message">
+        <h1>Chat with your bots</h1>
+        <p>Click on a bot to start chatting</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Bot Modal Fade from left -->
+  <div class="modal fade p-2" id="addBotModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fa fa-android" aria-hidden="true"></i>
+            &nbsp; Add Bot
+          </h5>
+          <i class="fa fa-times fa-fw" aria-hidden="true" data-dismiss="modal" style="cursor: pointer;"></i>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <!-- create a form with menu items list and description and a submit button with + icon -->
+              <form class="row g-3" id="add-bot-form" method="POST" action="/add_conversation">
+                <div class="col-12">
+                  <label class="form-label">
+                    Name <a style="color: #ffbc04; font-size: 1.2rem; text-decoration: none;">*</a>
+                  </label>
+                  <input type="text" class="mt-2 mb-3 form-control" id="bot-name" name="bot_name"
+                    placeholder="Bot Name (e.g. John)" required minlength="3" maxlength="20">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">
+                    Description <a style="color: #ffbc04; font-size: 1.2rem; text-decoration: none;">*</a>
+                  </label>
+                  <input type="text" class="mt-2 mb-3 form-control" id="bot-description" name="bot_description"
+                    placeholder="Bot Description (e.g. a personal assistant)" required minlength="5"
+                    title="Bot Description should be at least 5 characters long">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">
+                    <!-- optional in italics -->
+                    Prompt <sup style="color: #ffbc04; font-size: 0.7rem;">(optional)</sup>
+                  </label>
+                  <textarea type="text" class="mt-2 mb-3 form-control" id="bot-prompt" name="bot_prompt" rows="3"
+                    style="resize: none; overflow: auto;">I'm {bot name}, {bot description}. How can I help you today?</textarea>
+                </div>
+                <div class="col-12 mt-2">
+                  <button id="submit-btn" type="submit" class="btn btn-success w-100">
+                    Add Bot
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+<script src="https://use.typekit.net/hoy3lrg.js"></script>
+
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+
+</html>
